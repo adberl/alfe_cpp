@@ -4,6 +4,7 @@
 #include <unistd.h> 
 #include <string.h> 
 #define PORT 60004 
+#define ADDRESS "192.168.1.13"   
    
 int main(int argc, char const *argv[]) 
 { 
@@ -18,7 +19,7 @@ int main(int argc, char const *argv[])
     serv_addr.sin_port = htons(PORT); 
        
     // Convert IPv4 and IPv6 addresses from text to binary form 
-    if(inet_pton(AF_INET, "192.168.1.7", &serv_addr.sin_addr)<=0)  
+    if(inet_pton(AF_INET, ADDRESS, &serv_addr.sin_addr)<=0)  
     { 
         printf("\nInvalid address/ Address not supported \n"); 
     } 
@@ -28,10 +29,15 @@ int main(int argc, char const *argv[])
         printf("\nConnection Failed \n"); 
         return -1; 
     } 
-    send(sock , "1\0", 32, 0 ); 
+    char buffer[32];
+    buffer[0] = '1';
+    buffer[1] = '\0';
+	write(sock, buffer, sizeof(buffer));
+//    send(sock , "1\0", 32, 0 ); 
     printf("Sent command\n");
-    sleep(3); 
-    send(sock, "0\0", 32, 0 ); 
+    printf("%s", buffer);  
+	sleep(1); 
+    send(sock, "12\0", 32, 0 ); 
     return 0; 
 } 
 
