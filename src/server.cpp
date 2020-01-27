@@ -67,6 +67,14 @@ Server::Server(Alfe* a) {
 			case 4:
 				bot->backwards();
 				break;
+			case 5:
+				char status;
+				status = bot->leds();
+				write(newsockfd, &status, 1);
+				break;
+			case 6:
+				bot->distance();
+				break;
 			default:
 				bot->stop();
 				break;

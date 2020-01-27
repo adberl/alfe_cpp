@@ -3,6 +3,7 @@
 #include <string>
 #include <pigpio.h>
 #include <unistd.h>
+#include <ctime>
 
 using namespace std;
 
@@ -18,7 +19,7 @@ Alfe::Alfe() {
     }
 	
 	gpioSetMode(GPIO_TRIGGER, PI_OUTPUT);
-	gpioSetMode(GPIO_ECHO, PI_OUTPUT);	
+	gpioSetMode(GPIO_ECHO, PI_INPUT);	
 	for(int i : MOTORS) { 
 		gpioSetMode(i, PI_OUTPUT);
 	}
@@ -64,11 +65,43 @@ void Alfe::right() {
 }
 
 int Alfe::distance() {
-	
+	gpioWrite(GPIO_TRIGGER, PI_OFF);
+	usleep(0.005);
+	gpioWrite(GPIO_TRIGGER, PI_ON);
+	usleep(0.015);
+	gpioWrite(GPIO_TRIGGER, PI_OFF);
+
+	gpioSetAlertFunc(GPIO_ECHO, Alfe::distanceHelper);
+
 	return 0;
 }
 
-void Alfe::leds() {
-	
+void Alfe::distanceHelper(int gpio, int level, uint32_t tick) {
+
+   static uint32_t startTick=0;
+   int diffTick;
+
+   if (level == PI_ON)
+   {
+      startTick = tick;
+   }
+   else if (level == PI_OFF)
+   {
+      diffTick = tick - startTick;
+      cout << (diffTick/2) * 0.0343 << endl;
+   }
+
+}
+
+char Alfe::leds() {
+	char status;
+	for(int i : LEDS) {
+		int a = gpioRead(i);
+		if(a == 1)
+			status = (status + 1) << 1;
+		else	
+			status = status << 1;
+	}
+	return status;
 }
 

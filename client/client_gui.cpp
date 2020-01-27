@@ -16,8 +16,20 @@ using namespace std;
 
 bool working = true;
 
-void *graphics(void* arg1)
-{
+void readLED(int sock) {
+	char status;
+	if(read(sock, &status, 1) < 0) {
+		cout << "failed to get LED status" << endl;
+		exit(1);
+	}
+	for(int i = 0; i < 8; i++) {
+		cout << (status>>i & 0x01);
+	}
+	cout << endl;
+}
+
+void *graphics(void* arg1) {
+
 	int sock = (intptr_t) arg1;
     sf::RenderWindow window(sf::VideoMode(600, 600), "alfe_cpp control panel");
 	sf::Keyboard::Key lastpressed = sf::Keyboard::Unknown;
@@ -61,6 +73,14 @@ void *graphics(void* arg1)
 						else if(event.key.code == sf::Keyboard::Down) {
 							write(sock, "4", 1);
 							cout << "going down" << endl;
+						}
+						else if(event.key.code == sf::Keyboard::S) {
+							write(sock, "5", 1);
+							cout << "reading LEDs" << endl;
+							readLED(sock);
+						}
+						else if(event.key.code == sf::Keyboard::D) {
+							write(sock, "6", 1);
 						}
 						lastpressed = event.key.code;
 						if(event.key.code == sf::Keyboard::Escape) {

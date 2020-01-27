@@ -9,6 +9,9 @@ class Alfe {
 	int MOTORS[4] = {18, 24, 25, 12};
 	int LEDS[6] = {4, 17, 27, 22, 13, 26};
 	
+	private:
+		static void distanceHelper(int, int, uint32_t);
+	
 	public: 
 		Alfe();
 		~Alfe() = default;
@@ -17,7 +20,7 @@ class Alfe {
 		void left();
 		void right();
 		int distance(); 
-		void leds();
+		char leds();
 		void stop();
 
 };
